@@ -1,0 +1,136 @@
+
+--1.
+select first_name
+, last_name
+, 'Coach' as [Coach/Player]
+from coach c
+join person p
+on p.PersonID = c.PersonID
+union
+select first_name,
+last_name,
+'Player'
+from person p
+join player pl
+on p.PersonID = pl.PersonID
+/*first_name      last_name                 Coach/Player
+--------------- ------------------------- ------------
+Alfred          Dillinger                 Coach
+Allen           Timothy                   Coach
+Anthoney        Catchpole                 Player
+Audrey          Ropeburn                  Coach
+Barry           Urguhart                  Player
+Ben             Axch                      Player
+Ben             Biri                      Player
+Bob             Scott                     Coach
+Carlos          Velasquez                 Coach
+Chad            Axch                      Player
+Chase           Cook                      Player
+Christopher     Biri                      Player
+David           Lefbowitz                 Player
+Doug            Catchpole                 Player
+Frank           Menchu                    Player
+George          Biri                      Player
+Harrison        Catchpole                 Player
+Jack            Lancer                    Player
+Jacob           Blake                     Player
+Jacob           Gregory                   Player
+Jacob           Ropeburn                  Player
+James           Barney                    Coach
+Jason           Cook                      Player
+Jason           Kingston                  Player
+Jeff            Gregory                   Player
+Jim             Johnson                   Coach
+John            Menchu                    Player
+Joseph          Urguhart                  Player
+Larry           Ngao                      Coach
+Mark            Quigley                   Coach
+Martin          Clark                     Player
+Martin          Sam                       Coach
+Matt            Urguhart                  Player
+Michael         Lefbowitz                 Player
+Midori          Nagayama                  Coach
+Paul            Jones                     Player
+Raymond         Menchu                    Player
+Steve           Clark                     Coach
+Theodore        Turner                    Coach
+Thomas          Griffen                   Player
+Tim             Ford                      Coach
+Tom             Jones                     Coach
+Warren          Tanner                    Coach
+William         Griffen                   Player
+(44 row(s) affected)*/
+
+--2. 
+select first_name, last_name
+from team t
+join person p
+on t.teamID = p.PersonId
+except
+select first_name, last_name
+from team t
+join person p
+on t.teamID = p.PersonId
+
+
+/*first_name      last_name
+--------------- -------------------------
+(0 row(s) affected)
+*/
+
+
+--3:
+select teamName
+from game g join team t
+on g.winning_team = t.teamID
+intersect
+select teamName
+from game g join team t
+on g.home_team = t.teamID
+/*---------------
+output:Blue Jackets
+Gold Dragons
+Green Hornets
+Purple Pilots
+Red Devils
+Silver Lions
+(6 rows affected)
+--------------------------------------------------------------------------
+----*/
+--5:
+select teamName
+from game g join team t
+on g.winning_team = t.teamID
+intersect
+select teamName
+from game g join team t
+on g.home_team = t.teamID
+select first_name, last_name, teamName
+from person p join roster r on p.PersonId = r.playerID
+join team t on r.teamID = t.teamID
+where PersonId in
+(select playerID
+from roster
+where teamID in
+(select teamID
+from team
+where PersonId in
+(select PersonID
+from playerrec
+where Physical = 'N')))
+order by teamName
+/*--------------------------------------------------------------
+output:first_name      last_name                 teamName
+--------------- ------------------------- ---------------
+Christopher     Biri                      Blue Jackets
+Barry           Urguhart                  Gold Dragons
+Frank           Menchu                    Gold Dragons
+David           Lefbowitz                 Green Hornets
+Chase           Cook                      Green Hornets
+Matt            Urguhart                  Purple Pilots
+Michael         Lefbowitz                 Red Devils
+Jason           Cook                      Red Devils
+Jack            Lancer                    Silver Lions
+(9 rows affected)
+--------------------------------------------------------------------------*/
+
