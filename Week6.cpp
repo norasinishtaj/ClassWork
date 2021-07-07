@@ -3,6 +3,12 @@
 //...player and the scores they recieved. It will calculate the average and print out the results ...
 //...in an organized fashion.
 
+
+
+//UPDATE WEEK 7. We edit this program to use struct. In doing this I changed my "average" function 
+// over to count and added a count++ to make sure the average continues to each player which fixed
+// my error from last week. 
+
 #include <iostream>
 #include <string>
 #include <iomanip>
@@ -11,8 +17,18 @@
 
 using namespace std;
 
+//struct added
+
+struct bowler
+{
+    string playerName;
+    int playerScore[5],
+        average;
+
+};
+
 //usually don't use global varibles but these will stay constant for everything
-const int columns = 4,
+const int columns = 5,
 rows = 10;
 
 //input the file that gives the name of the player, and the score
@@ -20,7 +36,8 @@ rows = 10;
 //this is a bool, it will return either true or false
 //this case will be true because if false, it didn't run properly
 
-bool GetBowlingData(string filename,string playerName[rows], int playerScore[rows][columns])
+bool GetBowlingData(string filename, bowler bowlerInfo[],// int playerScore[rows][columns]) 
+    int& count)
 {
    // read in file and make sure it opens
     
@@ -38,14 +55,16 @@ bool GetBowlingData(string filename,string playerName[rows], int playerScore[row
     for (int i = 0; i < rows; i++)
     {
 
-       newFile >> playerName[i];
+       newFile >> bowlerInfo[count].playerName;
 
     // read in data for columns
        for (int x = 0; x < columns; x++)
-     {
+       {
 
-           newFile >> playerScore[i][x];
+           newFile >> bowlerInfo[count].playerScore[x];
        }
+
+       count++;
     }
 
     //good practice to make sure the file is closed
@@ -57,7 +76,7 @@ bool GetBowlingData(string filename,string playerName[rows], int playerScore[row
 
 //pretty print function to organize results
 //can be void because no reutrn needed
-void PrettyPrintResults(string playerName[rows], int playerScore[rows][columns], double average[])
+void PrettyPrintResults(bowler bowlerInfo[], int& count)
 {
     cout << "*************************************\n"
         << "Welcome to my Bowling League Program!\n"
@@ -66,25 +85,25 @@ void PrettyPrintResults(string playerName[rows], int playerScore[rows][columns],
     int i,
         x;
 
-    for (i = 0; i < rows; i++)
+    for (i = 0; i < rows; i++)     
     {
-        cout << playerName[i] << "\t"
+        cout << bowlerInfo[i].playerName << "\t"
             << "\n";
 
-        for (x = 0; x < 4; x++)
+        for (x = 0; x < 5; x++)
         {
-            cout << "" << playerScore[i][x] << endl;
+            cout << "" << bowlerInfo[i].playerScore[x] << endl;
 
         }
 
-        cout << "\t" << average[i] << "\n\n";
+        cout << "\t" << bowlerInfo[i].average << "\n\n";
     }
 
 }
 
 //function for finding average
 //is a double because it will return a double
-double GetAverageScore(int playerScore[rows][columns], double *avg)
+double GetAverageScore(bowler bowlerInfo[], int& count)
 {
     //set up variables
     int i,  // i is for rows
@@ -99,10 +118,10 @@ double GetAverageScore(int playerScore[rows][columns], double *avg)
 
         for (int x = 0; x < columns; x++)
         {
-            total = total + playerScore[i][x];
+            total = total + bowlerInfo[i].playerScore[x];
         }
 
-        *avg = total/4.0;
+        bowlerInfo[i].average = int (total/5.0);
     }
 
     return 0;
@@ -111,21 +130,25 @@ double GetAverageScore(int playerScore[rows][columns], double *avg)
 int main()
 {
     //set up variables
-    string filename,
-        playerName[rows];
+    string filename;
 
-    int playerScore[rows][columns] = { 0 };
+    int count = 0;
+
+    bowler bowlerInfo[100];
+  //      playerName[rows];
+
+  //  int playerScore[rows][columns] = { 0 };
     
-    double average[rows] = { 0 };
+//    double average[rows] = { 0 };
 
     //main will print out all of these for each player.
 
-    if (GetBowlingData(filename, playerName, playerScore))
+    if (GetBowlingData(filename, bowlerInfo, count))
     {
       
-        GetAverageScore(playerScore, average);
+        GetAverageScore(bowlerInfo, count);
 
-        PrettyPrintResults(playerName, playerScore, average);
+        PrettyPrintResults(bowlerInfo, count);
 
 
         return 0;
